@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Draw2D | Demo Node Connector</title>
+
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<link type="text/css" rel="stylesheet" href="css/example.css" />
+    <link type="text/css" rel="stylesheet" href="css/contextmenu.css" />
+
+	<script type="text/javascript" src="js/shifty.js"></script>
+	<script type="text/javascript" src="js/raphael.js"></script>
+	<script type="text/javascript" src="js/jquery-1.12.0.min.js"></script>
+  	<script type="text/javascript" src="js/jquery.autoresize.js"></script>
+  	<script type="text/javascript" src="js/jquery-touch_punch.js"></script>
+  	<script type="text/javascript" src="js/jquery.contextmenu.js"></script>
+  	<script type="text/javascript" src="js/rgbcolor.js"></script>
+  	<script type="text/javascript" src="js/canvg.js"></script>
+  	<script type="text/javascript" src="js/Class.js"></script>
+  	<script type="text/javascript" src="js/json2.js"></script>
+  	<script type="text/javascript" src="js/pathfinding-browser.min.js"></script>
+	<script type="text/javascript" src="js/draw2d.js"></script>
+
+	<!-- Below js is useful to make a copy of canvas object -->
+	<script type="text/javascript" src="js/CopyInterceptorPolicy.js"></script>
+
+	<script type="text/javascript">
+
+		$(window).load(function () {	
+
+
+			// Define Two canvases:
+  			//var canvas1 = new draw2d.Canvas("myCanvsFirst"); // Define Tool Canvas.
+			var canvas = new draw2d.Canvas("gfx_holder");	// Define Draw Canvas.
+			
+
+
+			var canvas_str = draw2d.Canvas.extend({
+            init: function(id){	
+            	
+                this._super(id);
+                this.setScrollArea("#" + id);
+                this.currentDropConnection = null;
+            },
+            onDragEnter : function( draggedFigure )
+            {	
+                return null;
+            },
+            onDrop: function(droppedDomNode, x, y){
+                console.log(droppedDomNode, x, y);
+            }
+        });
+
+		self.canvas1 = new canvas_str("myCanvsFirst");
+
+
+
+
+
+			// This code activate the copy of object property i.e. by clicking shift + object select we create another copy over canvas:
+			canvas.installEditPolicy(new CopyInterceptorPolicy());
+
+			// Create Icons For Left Tool Canvas:
+			var iconDB =  new draw2d.shape.icon.Db();
+			iconDB.setDimension(50,50);
+			
+
+			// Create Shapes:
+			//var ObjOval = new draw2d.shape.basic.Oval(); // Create Rectangle Shape.
+		    var ObjRect = new draw2d.shape.basic.Rectangle({width:80,height:40, x:50, y:300, selectable: false, resizeable: false}); // Create Rectangle Shape.
+
+		    
+
+		    var ObjLine = new draw2d.shape.basic.Line(); // Create Line.
+
+		    // Set above created Line as its start point and end point as well as its position on tool box canvas.
+		    ObjLine.setStartPoint(25,160);
+			ObjLine.setEndPoint(75,160);
+
+			// Stroke will make line bolder:
+			ObjLine.setStroke(3);
+			// Fill color to line which is to be display.
+			ObjLine.setColor("#1d1dff");
+
+		    // Add shapes into canvas first
+		    canvas1.add(ObjRect,25,25);
+   	     	//canvas1.add(ObjOval,25,90);
+   	     	canvas1.add(iconDB,25,90);
+   	     	canvas1.add(ObjLine);
+
+
+			// create and add two nodes which contains Ports (In and OUT)
+			//
+			var start = new draw2d.shape.node.Start();
+			var end   = new draw2d.shape.node.End();
+
+			// ...add it to the canvas 
+			canvas.add( start, 50,50);
+			canvas.add( end, 230,80);
+
+			// Create a Connection and connect the Start and End node
+			//
+			var c = new draw2d.Connection();
+
+			// Set the endpoint decorations for the connection
+			//
+			c.setSourceDecorator(new draw2d.decoration.connection.BarDecorator());
+			c.setTargetDecorator(new draw2d.decoration.connection.DiamondDecorator());   
+			// Connect the endpoints with the start and end port
+			//
+			//c.setSource(start.getOutputPort(0));
+			//c.setTarget(end.getInputPort(0));
+
+			c.setSource(start.getOutputPort(0));
+			c.setTarget(end.getInputPort(0));
+
+			// and finally add the connection to the canvas
+			canvas.add(c);
+		});	
+	</script>
+
+</head>
+<body>
+
+ <div style="width:100%; white-space:nowrap;">
+    <span id="navigation" style="display: inline-block; vertical-align: top; padding: 5px; width:100px">
+      <div id="myCanvsFirst" class="draw2d_droppable" style="border: solid 1px gray; height: 320px"></div>
+    </span>
+
+    <span style="display: inline-block; vertical-align: top; padding: 5px; width:80%">
+     <div onselectstart="javascript:/*IE8 hack*/return false" id="gfx_holder" style="border: solid 1px gray; height: 350px">
+	 </div>
+	</span>
+ </div>
+
+
+
+<!-- <div id="myCanvsFirst"  style="width:200px; height:500px; background-color: #DAE4E4; border: 1px solid;"></div>	
+
+<div onselectstart="javascript:/*IE8 hack*/return false" 
+	 id="gfx_holder" 
+	 style="width:500px; 
+	 height:500px;
+	 margin-top: -500px;
+	 margin-left: 200px;
+	 background-color:gray">
+</div> -->
+
+</body>
+</html>

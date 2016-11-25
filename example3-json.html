@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Draw2D | Demo Node Connector</title>
+
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<link type="text/css" rel="stylesheet" href="css/example.css" />
+    <link type="text/css" rel="stylesheet" href="css/contextmenu.css" />
+
+	<script type="text/javascript" src="js/shifty.js"></script>
+	<script type="text/javascript" src="js/raphael.js"></script>
+	<script type="text/javascript" src="js/jquery-1.12.0.min.js"></script>
+  	<script type="text/javascript" src="js/jquery.autoresize.js"></script>
+  	<script type="text/javascript" src="js/jquery-touch_punch.js"></script>
+  	<script type="text/javascript" src="js/jquery.contextmenu.js"></script>
+  	<script type="text/javascript" src="js/rgbcolor.js"></script>
+  	<script type="text/javascript" src="js/canvg.js"></script>
+  	<script type="text/javascript" src="js/Class.js"></script>
+  	<script type="text/javascript" src="js/json2.js"></script>
+  	<script type="text/javascript" src="js/pathfinding-browser.min.js"></script>
+	<script type="text/javascript" src="js/draw2d.js"></script>
+
+	<!-- Below js is useful to make a copy of canvas object -->
+	<script type="text/javascript" src="js/CopyInterceptorPolicy.js"></script>
+
+	<script type="text/javascript">
+		// the document to load....in this case a simple JSON Object
+		var jsonDocument = 
+		    [
+		      {
+		        "type": "draw2d.shape.basic.Rectangle",
+		        "id": "5b4c74b0-96d1-1aa3-7eca-bbeaed5fffd7",
+		        "cssClass": "draw2d_droppable",
+		        "x": 237,
+		        "y": 236,
+		        "width": 93,
+		        "height": 38,
+		        "bgColor": [255,255,0]
+		      },
+		      /*{
+		        "type": "draw2d.shape.basic.Line",
+		        "id": "354fa3b9-a834-0221-2009-abc2d6bd852a",
+		        "x": 225,
+		        "y": 97,
+		        "width": 201,
+		        "height": 82,
+		        "radius": 2,
+		        "bgColor": {"red":0, "green":255, "blue":0}
+		      },*/
+		      {
+		        "type": "draw2d.shape.node.Start",
+		        "id": "ebfb35bb-5767-8155-c804-14bda7759dc2",
+		        "x": 50,
+		        "y": 50
+		       
+		      },
+		      {
+		        "type": "draw2d.shape.node.End",
+		        "id": "ebfb35bb-5767-8155-c804-14bd48789dc2",
+		        "x": 150,
+		        "y": 50
+		      },
+		      {
+		        "type": "draw2d.shape.node.Start",
+		        "id": "ebfb35bb-5767-8155-c804-14bda7779dc2",
+		        "x": 50,
+		        "y": 150
+		      },
+		      {
+		        "type": "draw2d.shape.node.End",
+		        "id": "ebfb35bb-5767-8155-c804-14bd48777dc2",
+		        "x": 150,
+		        "y": 150
+		      },
+
+		      {
+			    "type": "draw2d.Connection",
+			    "id": "74ce9e7e-5f0e-8642-6bec-4ff9c54b3f0a",
+			    "userData": {},
+			    //"cssClass": "draw2d_droppable",
+			    "stroke": 1,
+			    "color": "#1B1B1B",
+			    "outlineStroke": 0,
+			    "outlineColor": "none",
+			    "policy": "draw2d.policy.line.LineSelectionFeedbackPolicy",
+			    "router": "draw2d.layout.connection.ManhattanConnectionRouter",
+			    "radius": 2,
+			    "source": {
+			      "node": "ebfb35bb-5767-8155-c804-14bda7779dc2",
+			      "port": "output0"
+			    },
+			    "target": {
+			      "node": "ebfb35bb-5767-8155-c804-14bd48777dc2",
+			      "port": "input0"
+			    }
+			  }
+		      
+		     ];
+
+
+		
+			$(window).load(function () {
+
+				  // create the canvas for the user interaction
+				  //
+				  var canvas = new draw2d.Canvas("gfx_holder");
+				  
+				  // unmarshal the JSON document into the canvas
+				  // (load)
+				  var reader = new draw2d.io.json.Reader();
+				  reader.unmarshal(canvas, jsonDocument);
+				  
+				  // display the JSON document in the preview DIV
+				  //
+				  //displayJSON(canvas);
+				
+				  
+				  // add an event listener to the Canvas for change notifications.
+				  // We just dump the current canvas document into the DIV
+				  //
+				  console.log(canvas);
+				  
+				  canvas.getCommandStack().addEventListener(function(e){ 
+				      if(e.isPostChangeEvent()){	
+				      	//console.log(canvas);
+				          displayJSON(canvas);
+				      }
+				  });
+				
+			});
+
+			function displayJSON(canvas){	
+
+				console.log(canvas);
+
+			    var writer = new draw2d.io.json.Writer();
+			    writer.marshal(canvas,function(json){
+			        $("#json").text(JSON.stringify(json, null, 2));
+			    });
+			}
+ 
+
+	
+		/*$(window).load(function () {	
+
+
+			// Define Two canvases:
+  			var canvas1 = new draw2d.Canvas("myCanvsFirst"); // Define Tool Canvas.
+			var canvas = new draw2d.Canvas("gfx_holder");	// Define Draw Canvas.
+
+			// This code activate the copy of object property i.e. by clicking shift + object select we create another copy over canvas:
+			canvas.installEditPolicy(new CopyInterceptorPolicy());
+
+
+			// Create Icons For Left Tool Canvas:
+			var iconDB =  new draw2d.shape.icon.Db();
+			iconDB.setDimension(50,50);
+			
+
+
+			// Create Shapes:
+			//var ObjOval = new draw2d.shape.basic.Oval(); // Create Rectangle Shape.
+		    var ObjRect = new draw2d.shape.basic.Rectangle(); // Create Rectangle Shape.
+		    var ObjLine = new draw2d.shape.basic.Line(); // Create Line.
+
+		    // Set above created Line as its start point and end point as well as its position on tool box canvas.
+		    ObjLine.setStartPoint(25,160);
+			ObjLine.setEndPoint(75,160);
+
+			// Stroke will make line bolder:
+			ObjLine.setStroke(3);
+			// Fill color to line which is to be display.
+			ObjLine.setColor("#1d1dff");
+
+		    // Add shapes into canvas first
+		    canvas1.add(ObjRect,25,25);
+   	     	//canvas1.add(ObjOval,25,90);
+   	     	canvas1.add(iconDB,25,90);
+   	     	canvas1.add(ObjLine);
+
+
+			// create and add two nodes which contains Ports (In and OUT)
+			//
+			var start = new draw2d.shape.node.Start();
+			var end   = new draw2d.shape.node.End();
+
+			// ...add it to the canvas 
+			canvas.add( start, 50,50);
+			canvas.add( end, 230,80);
+
+			// Create a Connection and connect the Start and End node
+			//
+			var c = new draw2d.Connection();
+
+			// Set the endpoint decorations for the connection
+			//
+			c.setSourceDecorator(new draw2d.decoration.connection.BarDecorator());
+			c.setTargetDecorator(new draw2d.decoration.connection.DiamondDecorator());   
+			// Connect the endpoints with the start and end port
+			//
+			//c.setSource(start.getOutputPort(0));
+			//c.setTarget(end.getInputPort(0));
+
+			c.setSource(start.getOutputPort(0));
+			c.setTarget(end.getInputPort(0));
+
+			// and finally add the connection to the canvas
+			canvas.add(c);
+		});	*/
+	</script>
+
+</head>
+<body>
+
+ <div style="width:100%; white-space:nowrap;">
+    <span id="navigation" style="display: inline-block; vertical-align: top; padding: 5px; width:100px">
+      <div id="myCanvsFirst" style="border: solid 1px gray; height: 320px"></div>
+    </span>
+
+    <span style="display: inline-block; vertical-align: top; padding: 5px; width:80%">
+     <div onselectstart="javascript:/*IE8 hack*/return false" id="gfx_holder" style="border: solid 1px gray; height: 350px">
+	 </div>
+	</span>
+ </div>
+
+ <!-- <pre id="json" style="overflow:auto;position:absolute; top:10px; right:10px; width:350; height:500;background:white;border:1px solid gray">
+</pre> -->
+
+</body>
+</html>
